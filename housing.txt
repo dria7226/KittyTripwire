@@ -3,6 +3,8 @@
  var laser_length = 1;
  var laser_radius = 7/32;
  
+ var motor_radius = .5;
+ 
  var breadboard_length = 1 + 7/8 + 1/16;
  var breadboard_height = 1 + 3/8;
  var breadboard_thickness = 5/8;
@@ -11,8 +13,29 @@
  var bottle_radius = 2.75; bottle_radius /= 2;
  var bottle_neck_radius = 1 + 3/8; bottle_neck_radius /= 2;
  
- function main()
+ var thickness = 3/16;
+ 
+ function Base()
+ {
+     var base = cube([thickness,breadboard_length + thickness*4 + laser_radius*2 + bottle_radius*2,1]);
+     base = base.translate([0,0,bottle_height]);
+     
+     base = union(base, cube([thickness, thickness*3 + breadboard_length + laser_radius*2,-breadboard_height - motor_radius*2 - thickness]).translate([0,bottle_radius*2 + thickness,bottle_height]));
+     
+     return base;
+ }
+ 
+ function Cover()
  {
      
-     return cube();
+ }
+ 
+ function main()
+ {
+     var base = Base();
+     
+     var cover = Cover();
+     
+     
+     return base;
  }
