@@ -3,7 +3,11 @@
  var laser_length = 1;
  var laser_radius = 7/32;
  
- var motor_radius = .5;
+ var sprayer_width = 9/16;
+ var sprayer_length = 2 + 5/16;
+ var sprayer_height = 1 + 5/8;
+ 
+ var motor_radius = 0.5;
  
  var breadboard_length = 1 + 7/8 + 1/16;
  var breadboard_height = 1 + 3/8;
@@ -27,7 +31,19 @@
  
  function Cover()
  {
+     return cube();
+ }
+ 
+ function Sprayer()
+ {
+     var sprayer = cube([sprayer_length,sprayer_width,sprayer_width]);
      
+     
+     sprayer = sprayer.translate([-sprayer_width/2,-sprayer_width/2,bottle_height - sprayer_width]);     
+
+     var bottle = cylinder({'r': bottle_radius, 'h' : bottle_height - sprayer_height});
+     
+     return union(sprayer,bottle);
  }
  
  function main()
@@ -36,6 +52,10 @@
      
      var cover = Cover();
      
+     var sprayer = Sprayer();
+     sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
-     return base;
+     return union(  base.setColor([0,0,0]),
+                    cover.setColor([0,0,0]),
+                    sprayer.setColor([0.5,0.5,0.5]));
  }
