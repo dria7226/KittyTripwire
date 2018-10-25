@@ -39,7 +39,7 @@
      var sprayer = cube([sprayer_length,sprayer_width,sprayer_width]);
      
      
-     sprayer = sprayer.translate([-sprayer_width/2,-sprayer_width/2,bottle_height - sprayer_width]);     
+     sprayer = sprayer.translate([-3/8,-sprayer_width/2,bottle_height - sprayer_width]);     
 
      var bottle = cylinder({'r': bottle_radius, 'h' : bottle_height - sprayer_height});
      
@@ -53,7 +53,7 @@
      var cover = Cover();
      
      var sprayer = Sprayer();
-     sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
+     sprayer = sprayer.translate([3/8 + thickness,bottle_radius,0]);
      
      return union(  base.setColor([0,0,0]),
                     cover.setColor([0,0,0]),
