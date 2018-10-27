@@ -36,8 +36,16 @@
      inlay = difference(inlay, cube([bottle_radius-sprayer_width + thickness*2, breadboard_length, breadboard_height]).translate([-bottle_radius + sprayer_width/2 + thickness, bottle_radius*2 + thickness*2, bottle_height - sprayer_height + thickness*2]));
      
      base = union(base, inlay);
-     //laser and sensor
      
+     //laser and sensor
+        //laser
+        var laser = cube([laser_length + 1/4, laser_radius*2, laser_radius + 1/8]).translate([0,0,-1/8]);
+        laser = difference(laser, cylinder({'r' : laser_radius, 'h' : laser_length}).rotateY(90).translate([0,laser_radius,laser_radius]));
+        
+        base = union(base, laser.translate([thickness,bottle_radius*2 + breadboard_length + thickness*2.5, bottle_height - sprayer_height/4 + laser_radius + 1/8]));
+        
+        //sensor - pointing down
+        
      
      //cover snaps
      
@@ -71,7 +79,7 @@
      var sprayer = Sprayer();
      sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
-     return union(  base.setColor([0,0,0]),
+     return union(  base.setColor([0.2,0.2,0.2]),
                     //cover.setColor([0,0,0]),
                     sprayer.setColor([0.5,0.5,0.5]));
  }
