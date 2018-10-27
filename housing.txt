@@ -27,12 +27,16 @@
      base = base.translate([0,0,bottle_height - sprayer_height + thickness]);
      
      //track and handle
-     base = union(base, cube([thickness*2 + wire_width*3,breadboard_length/2 + thickness/2 + laser_radius + bottle_radius,thickness*2 + wire_width]).translate([thickness,breadboard_length/2 + thickness*2 + laser_radius + bottle_radius, bottle_height + 0.5]));
-     
+     var track = cylinder({'r': 7/16, 'h': thickness*2 + wire_width*3}).rotateY(90).translate([0,7/16,7/32]);
+     track = difference(track, cylinder({'r': 7/16, 'h': 1}).translate([thickness*3 + wire_width, 7/16, -0.25]));
+     track = difference(track, cube([7/8, 7/8, 1]).translate([thickness*2 + wire_width*3 - 7/16, 7/16, -0.25]));
+     track = union(track, cube([thickness*2 + wire_width*3,breadboard_length/2 + thickness/2 + laser_radius + bottle_radius,thickness*2 + wire_width]));
+     track = union(track, cylinder({'r': 3/16, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width, 7/16, 0]));
+     base = union(base, track.translate([thickness,breadboard_length/2 + thickness*2 + laser_radius + bottle_radius, bottle_height + 0.5 + 1/8]));
      
      var cutout = cube([thickness*2 + wire_width*3,breadboard_length + thickness + laser_radius*2 + bottle_radius*2, wire_width]);
-     base = difference(base, cutout.translate([0,thickness,bottle_height + 0.5 + thickness]));
-     base = difference(base, cutout.scale([(wire_width*3)/(wire_width*3 + thickness*2),1,1]).rotateY(90).translate([thickness*2 + wire_width,thickness,bottle_height + 0.5 + thickness + wire_width*2]));
+     base = difference(base, cutout.translate([0,thickness,bottle_height + 0.5 + thickness + 1/8]));
+     base = difference(base, cutout.scale([(wire_width*3)/(wire_width*3 + thickness*2),1,1]).rotateY(90).translate([thickness*2 + wire_width,thickness,bottle_height + 0.5 + thickness + wire_width*2 + 1/8]));
      
      //breadboard inlay???
      var inlay = cube([bottle_radius - sprayer_width/2 + thickness, breadboard_length + thickness*2, breadboard_height + thickness*2]);
@@ -41,7 +45,7 @@
      base = difference(base, inlay);
      
      inlay = difference(inlay, cube([bottle_radius-sprayer_width + thickness*2, breadboard_length, breadboard_height]).translate([-bottle_radius + sprayer_width/2 + thickness, bottle_radius*2 + thickness*2, bottle_height - sprayer_height + thickness*2]));
-     
+      
      base = union(base, inlay);
      
      //laser and sensor
