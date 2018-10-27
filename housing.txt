@@ -62,7 +62,7 @@
         var sensor = cube([wire_width*2, wire_width*5, 0.5]);
         
         sensor = difference(sensor, cube([wire_width*2, wire_width, 0.5]).translate([0,wire_width*2,0]));
-        sensor = difference(sensor, cube([wire_width, wire_width*3, 0.5 - wire_width]).translate([0,wire_width,0]));
+        sensor = difference(sensor, cube([wire_width, wire_width*3, 0.5]).translate([0,wire_width,0]));
 
         
         base = union(base, sensor.translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8, bottle_height - 0.85]));
