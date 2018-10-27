@@ -19,6 +19,8 @@
  
  var thickness = 3/16;
  
+ var wire_width = 3/32;
+ 
  function Base()
  {
      var base = cube([thickness,breadboard_length + thickness*4 + laser_radius*2 + bottle_radius*2,1 + max(breadboard_height, motor_radius*2) + thickness*2]);
@@ -48,7 +50,13 @@
         base = union(base, laser.translate([thickness,bottle_radius*2 + breadboard_length + thickness*2.5, bottle_height - sprayer_height/4 + laser_radius + 1/8]));
         
         //sensor - pointing down
+        var sensor = cube([wire_width*2, wire_width*5, 0.5]);
         
+        sensor = difference(sensor, cube([wire_width*2, wire_width, 0.5]).translate([0,wire_width*2,0]));
+        sensor = difference(sensor, cube([wire_width, wire_width*3, 0.5 - wire_width]).translate([0,wire_width,0]));
+
+        
+        base = union(base, sensor.translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8, bottle_height - 0.85]));
      
      //cover snaps
      
