@@ -41,6 +41,9 @@
         //laser
         var laser = cube([laser_length + 1/4, laser_radius*2, laser_radius + 1/8]).translate([0,0,-1/8]);
         laser = difference(laser, cylinder({'r' : laser_radius, 'h' : laser_length}).rotateY(90).translate([0,laser_radius,laser_radius]));
+        laser = difference(laser, cylinder({'r' : laser_radius*.75, 'h' : laser_length}).rotateY(90).translate([1,laser_radius,laser_radius]));
+        laser = difference(laser, cube([1/16, laser_radius*2, laser_radius*2]).translate([laser_length + 3/32,0,0]));
+        laser = difference(laser, cube([laser_length, laser_radius*2, laser_radius*2]).translate([0,0,laser_radius - 3/32]));
         
         base = union(base, laser.translate([thickness,bottle_radius*2 + breadboard_length + thickness*2.5, bottle_height - sprayer_height/4 + laser_radius + 1/8]));
         
