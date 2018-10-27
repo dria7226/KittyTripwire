@@ -21,10 +21,26 @@
  
  function Base()
  {
-     var base = cube([thickness,breadboard_length + thickness*4 + laser_radius*2 + bottle_radius*2,1]);
-     base = base.translate([0,0,bottle_height]);
+     var base = cube([thickness,breadboard_length + thickness*4 + laser_radius*2 + bottle_radius*2,1 + max(breadboard_height, motor_radius*2) + thickness*2]);
+     base = base.translate([0,0,bottle_height - sprayer_height + thickness]);
      
-     base = union(base, cube([thickness, thickness*3 + breadboard_length + laser_radius*2,-breadboard_height - motor_radius*2 - thickness]).translate([0,bottle_radius*2 + thickness,bottle_height]));
+     //track and handle
+     
+     
+     //breadboard inlay???
+     var inlay = cube([bottle_radius - sprayer_width/2 + thickness, breadboard_length + thickness*2, breadboard_height + thickness*2]);
+     inlay = inlay.translate([-bottle_radius + sprayer_width/2, bottle_radius*2 + thickness, bottle_height - sprayer_height + thickness]);
+     
+     base = difference(base, inlay);
+     
+     inlay = difference(inlay, cube([bottle_radius-sprayer_width + thickness*2, breadboard_length, breadboard_height]).translate([-bottle_radius + sprayer_width/2 + thickness, bottle_radius*2 + thickness*2, bottle_height - sprayer_height + thickness*2]));
+     
+     base = union(base, inlay);
+     //laser and sensor
+     
+     
+     //cover snaps
+     
      
      return base;
  }
@@ -39,7 +55,7 @@
      var sprayer = cube([sprayer_length,sprayer_width,sprayer_width]);
      
      
-     sprayer = sprayer.translate([-3/8,-sprayer_width/2,bottle_height - sprayer_width]);     
+     sprayer = sprayer.translate([-sprayer_width/2,-sprayer_width/2,bottle_height - sprayer_width]);     
 
      var bottle = cylinder({'r': bottle_radius, 'h' : bottle_height - sprayer_height});
      
@@ -53,9 +69,9 @@
      var cover = Cover();
      
      var sprayer = Sprayer();
-     sprayer = sprayer.translate([3/8 + thickness,bottle_radius,0]);
+     sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
      return union(  base.setColor([0,0,0]),
-                    cover.setColor([0,0,0]),
+                    //cover.setColor([0,0,0]),
                     sprayer.setColor([0.5,0.5,0.5]));
  }
