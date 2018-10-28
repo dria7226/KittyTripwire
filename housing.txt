@@ -21,17 +21,22 @@
  
  var wire_width = 3/32;
  
+ var pin_width = wire_width;
+ var handle_radius = 7/16;
+ var handle_length = breadboard_length/2 + thickness*2.5 + laser_radius + bottle_radius;
+ 
  function Base()
  {
      var base = cube([thickness,breadboard_length + thickness*4 + laser_radius*2 + bottle_radius*2,1 + max(breadboard_height, motor_radius*2) + thickness*2]);
      base = base.translate([0,0,bottle_height - sprayer_height + thickness]);
      
      //track and handle
-     var track = cylinder({'r': 7/16, 'h': thickness*2 + wire_width*3}).rotateY(90).translate([0,7/16,7/32]);
-     track = difference(track, cylinder({'r': 7/16, 'h': 1}).translate([thickness*3 + wire_width, 7/16, -0.25]));
-     track = difference(track, cube([7/8, 7/8, 1]).translate([thickness*2 + wire_width*3 - 7/16, 7/16, -0.25]));
+     var track = cylinder({'r': handle_radius, 'h': thickness*2 + wire_width*3}).rotateY(90).translate([0,handle_radius,handle_radius/2]);
+     track = difference(track, cylinder({'r': handle_radius, 'h': 1}).translate([thickness*3 + wire_width, handle_radius, -0.25]));
+     track = difference(track, cube([handle_radius*2, handle_radius*2, 1]).translate([thickness*2 + wire_width*3 - handle_radius, handle_radius, -0.25]));
      track = union(track, cube([thickness*2 + wire_width*3,breadboard_length/2 + thickness/2 + laser_radius + bottle_radius,thickness*2 + wire_width]));
-     track = union(track, cylinder({'r': 3/16, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width, 7/16, 0]));
+     track = union(track, cylinder({'r': 3/16, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width, handle_radius, 0]));
+     track = difference(track, cylinder({'r': pin_width*1.1/2, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width, handle_radius, 0]));
      base = union(base, track.translate([thickness,breadboard_length/2 + thickness*2 + laser_radius + bottle_radius, bottle_height + 0.5 + 1/8]));
      
      var cutout = cube([thickness*2 + wire_width*3,breadboard_length + thickness + laser_radius*2 + bottle_radius*2, wire_width]);
@@ -62,7 +67,7 @@
         var sensor = cube([wire_width*2, wire_width*5, 0.5]);
         
         sensor = difference(sensor, cube([wire_width*2, wire_width, 0.5]).translate([0,wire_width*2,0]));
-        sensor = difference(sensor, cube([wire_width, wire_width*3, 0.5]).translate([0,wire_width,0]));
+        sensor = difference(sensor, cube([wire_width, wire_width*3, 0.5 - wire_width]).translate([0,wire_width,0]));
 
         
         base = union(base, sensor.translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8, bottle_height - 0.85]));
@@ -73,6 +78,24 @@
      //holders
      
      return base;
+ }
+ 
+ function Handle()
+ {
+     var handle = cylinder({'r': handle_radius, 'h': handle_length - handle_radius*2});
+ 
+    handle = handle.rotateX(-90);
+    
+    var end = cylinder({'r': handle_radius, 'h': handle_radius*2}).translate([0,0,-handle_radius]);
+    
+    handle = union(handle, end);
+    handle = union(handle, end.translate([0,handle_length - handle_radius*2,0]));
+ 
+    handle = intersection(handle, handle.scale([1,3,1]).translate([0,-handle_length*0.75,0]));
+ 
+    handle = difference(handle, cylinder({'r': pin_width*1.1/2, 'h': handle_radius*2}).translate([0, 0, -handle_radius]));
+ 
+    return handle;
  }
  
  function Cover()
@@ -101,7 +124,11 @@
      var sprayer = Sprayer();
      sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
+     var handle = Handle();
+     handle = handle.translate([thickness*3 + wire_width*2,thickness + handle_radius + handle_length,bottle_height + 0.5 + 1/8 + handle_radius/2]);
+     
      return union(  base.setColor([0.2,0.2,0.2]),
+                    handle.setColor([0.2, 0.2, 0.2]),
                     //cover.setColor([0,0,0]),
                     sprayer.setColor([0.5,0.5,0.5]));
  }
