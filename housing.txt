@@ -41,7 +41,7 @@
      track = union(track, cube(track_size));
      track = union(track, cylinder({'r': 3/16, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width, handle_radius, 0]));
      track = difference(track, cylinder({'r': pin_width*1.1/2, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width, handle_radius, 0]));
-     base = union(base, track.translate([thickness,breadboard_length/2 + thickness*2 + laser_radius + bottle_radius, -track_size[2]/2]));
+     base = union(base, track.translate([thickness, handle_length, base_size[2] - 1 + 1/16]));
      
      var cutout = cube([thickness*2 + wire_width*3, full_track_length, wire_width]);
      base = difference(base, cutout.translate([0,thickness,0.5 + thickness + 1/8]));
