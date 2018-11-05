@@ -37,19 +37,19 @@
  var handle_radius = 7/16;
  var full_track_length = base_size[1] - thickness*3;
  var handle_length = full_track_length/2 + thickness*2;
+ var track_size  = [thickness*2 + wire_width*3, full_track_length/2 + thickness/2, thickness*2 + wire_width];
  
  function Base()
  {
      var base = cube(base_size);
      
      //track and handle
-     var track_size  = [thickness*2 + wire_width*3, full_track_length/2 + thickness/2, thickness*2 + wire_width];
      var track = cylinder({'r': handle_radius, 'h': thickness*2 + wire_width*3}).rotateY(90).translate([0,handle_radius,handle_radius/2]);
      track = difference(track, cylinder({'r': handle_radius, 'h': 1}).translate([thickness*3 + wire_width, handle_radius, -0.25]));
      track = difference(track, cube([handle_radius*2, handle_radius*2, 1]).translate([thickness*2 + wire_width*3 - handle_radius, handle_radius, -0.25]));
      track = union(track, cube(track_size));
-     track = union(track, cylinder({'r': 3/16, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width, handle_radius, 0]));
-     track = difference(track, cylinder({'r': pin_width*1.1/2, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width, handle_radius, 0]));
+     track = union(track, cylinder({'r': 3/16, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width + 0.05, handle_radius, 0]));
+     track = difference(track, cylinder({'r': pin_width*1.1/2, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width + 0.05, handle_radius, 0]));
      base = union(base, track.translate([thickness, handle_length - thickness, base_size[2] - track_size[2]/2 - 0.5]));
      
      var cutout = cube([thickness*2 + wire_width*3, full_track_length, wire_width]);
@@ -108,6 +108,10 @@
  
     handle = difference(handle, cylinder({'r': pin_width*1.1/2, 'h': handle_radius*2}).translate([0, 0, -handle_radius]));
  
+    handle = difference(handle, cube([track_size[0] + 1/8, track_size[1], track_size[2] + 1/8]).translate([-track_size[0] - 1/16, -0.4, -track_size[2]/2 - 1/16]));
+ 
+    handle = difference(handle, cube([1,-1,track_size[2] + 1/8]).translate([-0.5, -0.05,-track_size[2]/2 - 1/16]));
+ 
     return handle;
  }
  
@@ -131,7 +135,7 @@
  function main()
  {
      var base = Base();
-     //base = base.translate([0,0,bottle_height - sprayer_height + thickness]);
+     base = base.translate([0,0,bottle_height - sprayer_height + thickness]);
      
      var cover = Cover();
      
@@ -139,7 +143,7 @@
      sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
      var handle = Handle();
-     handle = handle.translate([thickness*3 + wire_width*2,thickness + handle_radius + handle_length,bottle_height + 0.5 + 1/8 + handle_radius/2]);
+     handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height + 0.6 + handle_radius/2]);
      
      return union(  base.setColor([0.2,0.2,0.2]),
                     handle.setColor([0.2, 0.2, 0.2]),
