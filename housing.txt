@@ -111,6 +111,8 @@
     handle = difference(handle, cube([track_size[0] + 1/8, track_size[1], track_size[2] + 1/8]).translate([-track_size[0] - 1/16, -0.4, -track_size[2]/2 - 1/16]));
  
     handle = difference(handle, cube([1,-1,track_size[2] + 1/8]).translate([-0.5, -0.05,-track_size[2]/2 - 1/16]));
+    
+    handle = difference(handle, cylinder({'r': 1/4, 'h': track_size[2] + 1/8}).translate([0,0,-track_size[2]/2 - 1/16]));
  
     return handle;
  }
