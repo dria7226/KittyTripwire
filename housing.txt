@@ -93,7 +93,7 @@
      return base;
  }
  
- function Slider()
+ function Rail()
  {
      
  }
@@ -142,7 +142,7 @@
  function main()
  {
      var base = Base();
-     base = base.translate([0,0,bottle_height - sprayer_height + thickness]);
+     //base = base.translate([0,0,bottle_height - sprayer_height + thickness]);
      
      var cover = Cover();
      
@@ -152,8 +152,8 @@
      var handle = Handle();
      handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height + 0.6 + handle_radius/2]);
      
-     return union(  base.setColor([0.2,0.2,0.2]),
-                    handle.setColor([0.2, 0.2, 0.2])
+     return union(  base.setColor([0.2,0.2,0.2])
+                    //handle.setColor([0.2, 0.2, 0.2])
                     //cover.setColor([0,0,0]),
                     //sprayer.setColor([0.5,0.5,0.5])
                     );
