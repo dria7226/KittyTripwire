@@ -30,7 +30,7 @@
  
  var wire_width = 3/32;
  
- var base_size = [thickness, breadboard_length + thickness*4 + laser_radius*2 + bottle_radius*2, 1 + breadboard_height + thickness*2];
+ var base_size = [thickness, breadboard_length + thickness*4 + laser_radius*2 + bottle_radius*2, 1 + breadboard_height + thickness*4];
  
  //stabilizer
  var stabilizer_radius = 1/4;
@@ -76,7 +76,7 @@
      
      base = difference(base, wire_cutout.translate([0,bottle_radius*2 + thickness,thickness]));
      
-     base = difference(base, wire_cutout.translate([0,bottle_radius*2 + thickness, thickness + breadboard_height]));
+     base = difference(base, wire_cutout.translate([0,bottle_radius*2 + thickness, thickness + breadboard_height + wire_width*1.5]));
      
      //laser and sensor
         //laser
@@ -86,22 +86,32 @@
         laser = difference(laser, cube([1/16, laser_radius*2, laser_radius*2]).translate([laser_length + 3/32,0,0]));
         laser = difference(laser, cube([laser_length, laser_radius*2, laser_radius*2]).translate([0,0,laser_radius - 3/32]));
         
-        base = union(base, laser.translate([thickness,bottle_radius*2 + breadboard_length + thickness*2.5, bottle_height - sprayer_height/4 + laser_radius + 1/8]));
+        base = union(base, laser.translate([thickness,bottle_radius*2 + breadboard_length + thickness*2.5,sprayer_height/2 + laser_radius + 1/8]));
         
         //sensor - pointing down
         var sensor = cube([wire_width*2, wire_width*5, 0.5]);
         
         sensor = difference(sensor, cube([wire_width*2, wire_width, 0.5]).translate([0,wire_width*2,0]));
         sensor = difference(sensor, cube([wire_width, wire_width*3, 0.5 - wire_width]).translate([0,wire_width,0]));
-
         
-        base = union(base, sensor.translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8, bottle_height - 0.85]));
+        base = union(base, sensor.translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8,]));
      
      //cover snaps
      
      
      //holders
-     
+        //motor holder
+        var motor_holder = cylinder({'r': motor_radius + thickness, 'h': motor_length});
+        motor_holder = intersection(motor_holder, cube([motor_length, motor_length, motor_length]));
+        var motor_bezel = cylinder({'r': thickness/2, 'h': motor_length});
+        motor_holder = union(motor_holder, motor_bezel.translate([0,motor_radius + thickness/2,0]));
+        motor_holder = union(motor_holder, motor_bezel.translate([motor_radius + thickness/2,0,0]));
+        motor_holder = motor_holder.rotateZ(45);
+        motor_holder = union(motor_holder, cube([0.7,1,motor_length - thickness*3]).translate([-0.35,0,thickness*3/2]));
+        motor_holder = difference(motor_holder, cylinder({'r':motor_radius, 'h': motor_length}));
+        
+        base = union(base, motor_holder.rotateY(90).translate([-motor_length/2,-1,0]).rotateZ(90).translate([thickness,bottle_radius + gear_offset + gear_width/2 + motor_length/2,thickness + breadboard_height/2 + wire_width*1.5]));
+        
      return base;
  }
  
