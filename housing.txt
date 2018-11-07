@@ -52,7 +52,7 @@
      stabilizer = union(stabilizer, sphere({'r': stabilizer_radius}).translate([-stabilizer_height + stabilizer_radius,0,0]));
      stabilizer = union(stabilizer, cube([thickness, stabilizer_radius*4,stabilizer_radius*4]).rotateX(45).translate([0,0,-stabilizer_radius]));
      
-     base = union(base, stabilizer.translate([0,1,-stabilizer_radius]));
+     base = union(base, stabilizer.translate([0,bottle_radius*2,-stabilizer_radius]));
      base = union(base, stabilizer.translate([0,base_size[1] - 1,-stabilizer_radius]));
      
      base = union(base, stabilizer.rotateX(180).translate([0,1,stabilizer_radius + base_size[2]]));
