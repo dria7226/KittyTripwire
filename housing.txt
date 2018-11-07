@@ -164,7 +164,7 @@
  function main()
  {
      var base = Base();
-     //base = base.translate([0,0,bottle_height - sprayer_height + thickness]);
+     base = base.translate([0,0,bottle_height - sprayer_height]);
      
      var cover = Cover();
      
@@ -172,11 +172,11 @@
      sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
      var handle = Handle();
-     handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height + 0.6 + handle_radius/2]);
+     handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2]);
      
-     return union(  base.setColor([0.2,0.2,0.2])
-                    //handle.setColor([0.2, 0.2, 0.2])
+     return union(  base.setColor([0.2,0.2,0.2]),
+                    handle.setColor([0.2, 0.2, 0.2]),
                     //cover.setColor([0,0,0]),
-                    //sprayer.setColor([0.5,0.5,0.5])
+                    sprayer.setColor([0.5,0.5,0.5])
                     );
  }
