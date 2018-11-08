@@ -141,6 +141,10 @@
     
     handle = difference(handle, cylinder({'r': 1/4, 'h': track_size[2] + 1/8}).translate([0,0,-track_size[2]/2 - 1/16]));
  
+    handle = difference(handle, cylinder({'r': 1/8}).translate([0,0,handle_radius - 1/16]));
+ 
+    handle = difference(handle, cylinder({'r': 1/8}).translate([0,0,-1 - handle_radius + 1/16]));
+ 
     return handle;
  }
  
@@ -164,7 +168,7 @@
  function main()
  {
      var base = Base();
-     base = base.translate([0,0,bottle_height - sprayer_height]);
+     //base = base.translate([0,0,bottle_height - sprayer_height]);
      
      var cover = Cover();
      
@@ -172,11 +176,11 @@
      sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
      var handle = Handle();
-     handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2]);
+     //handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2]);
      
-     return union(  base.setColor([0.2,0.2,0.2]),
-                    handle.setColor([0.2, 0.2, 0.2]),
+     return union(  //base.setColor([0.2,0.2,0.2]),
+                    handle.setColor([0.2, 0.2, 0.2])
                     //cover.setColor([0,0,0]),
-                    sprayer.setColor([0.5,0.5,0.5])
+                    //sprayer.setColor([0.5,0.5,0.5])
                     );
  }
