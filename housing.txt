@@ -34,7 +34,7 @@
  
  //stabilizer
  var stabilizer_radius = 1/4;
- var stabilizer_height = breadboard_thickness + 1/16 + thickness;
+ var stabilizer_height = breadboard_thickness + thickness*2;
  
  //track
  var pin_width = wire_width;
@@ -42,6 +42,19 @@
  var full_track_length = base_size[1] - thickness*3;
  var handle_length = full_track_length/2 + thickness*2;
  var track_size  = [thickness*2 + wire_width*3, full_track_length/2 + thickness/2, thickness*2 + wire_width];
+ 
+ //grip
+ var grip_height = 1.5;
+ var grip_radius = 1/8;
+ 
+ function Grip()
+ {
+     var grip = cube([-(grip_radius*2 + stabilizer_height + stabilizer_radius),thickness,-grip_height]);
+     
+     
+     
+     return grip;
+ }
  
  function Base()
  {
@@ -57,6 +70,9 @@
      
      base = union(base, stabilizer.rotateX(180).translate([0,1,stabilizer_radius + base_size[2]]));
      base = union(base, stabilizer.rotateX(180).translate([0,base_size[1] - 1,stabilizer_radius + base_size[2]]));
+     
+     //grip
+     base = union(base, Grip().translate([0,0,base_size[2]]));
      
      //track and handle
      var track = cylinder({'r': handle_radius, 'h': thickness*2 + wire_width*3}).rotateY(90).translate([0,handle_radius,handle_radius/2]);
@@ -110,7 +126,7 @@
         motor_holder = union(motor_holder, cube([0.7,1,motor_length - thickness*3]).translate([-0.35,0,thickness*3/2]));
         motor_holder = difference(motor_holder, cylinder({'r':motor_radius, 'h': motor_length}));
         
-        base = union(base, motor_holder.rotateY(90).translate([-motor_length/2,-1,0]).rotateZ(90).translate([thickness,bottle_radius + gear_offset + gear_width/2 + motor_length/2,thickness + breadboard_height/2 + wire_width*1.5]));
+        base = union(base, motor_holder.rotateY(90).translate([-motor_length/2,-1,0]).rotateZ(90).translate([thickness,bottle_radius + motor_length/2 + gear_offset + gear_width/2,thickness + breadboard_height/2 + wire_width*1.5]));
         
      return base;
  }
@@ -168,7 +184,7 @@
  function main()
  {
      var base = Base();
-     //base = base.translate([0,0,bottle_height - sprayer_height]);
+     base = base.translate([0,0,bottle_height - sprayer_height]);
      
      var cover = Cover();
      
@@ -178,9 +194,9 @@
      var handle = Handle();
      //handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2]);
      
-     return union(  //base.setColor([0.2,0.2,0.2]),
-                    handle.setColor([0.2, 0.2, 0.2])
-                    //cover.setColor([0,0,0]),
-                    //sprayer.setColor([0.5,0.5,0.5])
+     return union(  base.setColor([0.2,0.2,0.2])
+                    //,handle.setColor([0.2, 0.2, 0.2])
+                    //,cover.setColor([0,0,0])
+                    ,sprayer.setColor([0.5,0.5,0.5])
                     );
  }
