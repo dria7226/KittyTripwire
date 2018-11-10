@@ -70,11 +70,18 @@
      base = union(base, stabilizer.translate([0,bottle_radius*2,-stabilizer_radius]));
      base = union(base, stabilizer.translate([0,base_size[1] - 1,-stabilizer_radius]));
      
-     base = union(base, stabilizer.rotateX(180).translate([0,1,stabilizer_radius + base_size[2] + 1/16]));
-     base = union(base, stabilizer.rotateX(180).translate([0,base_size[1] - 1,stabilizer_radius + base_size[2] + 1/16]));
+     base = union(base, stabilizer.rotateX(180).translate([0,1,stabilizer_radius + base_size[2] + clearance]));
+     base = union(base, stabilizer.rotateX(180).translate([0,base_size[1] - 1,stabilizer_radius + base_size[2] + clearance]));
      
      //grip
-     base = union(base, Grip(grip_size).translate([0,0,base_size[2]]));
+     base = union(base, Grip(grip_size).translate([0,-thickness,base_size[2]]));
+     base = union(base, intersection(cylinder({'r': thickness, 'h': grip_size[2]}), cube([1,-1,grip_size[2]])).translate([0,0,base_size[2]]));
+     
+     var cube_side = 1;
+     var support = intersection(cube(2), cube([cube_side, cube_side, (-grip_size[2] - wire_width*3)/2 - clearance]).translate([-cube_side/2,-cube_side/2,0]).rotateZ(45)).rotateZ(90);
+     
+     base = union(base, support.translate([0,0,base_size[2] + grip_size[2]]));
+     base = union(base, support.mirroredZ().translate([0,0, base_size[2]]));
      
      //track and handle
      var track = cylinder({'r': handle_radius, 'h': thickness*2 + wire_width*3}).rotateY(90).translate([0,handle_radius,handle_radius/2]);
@@ -85,9 +92,9 @@
      track = difference(track, cylinder({'r': pin_width*1.1/2, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width + 0.05, handle_radius, 0]));
      base = union(base, track.translate([thickness, handle_length - thickness, base_size[2] - track_size[2]/2 - 0.5]));
      
-     var cutout = cube([thickness*2 + wire_width*3, full_track_length, wire_width]);
-     base = difference(base, cutout.translate([0,thickness,base_size[2] - 0.5 - wire_width/2]));
-     base = difference(base, cutout.scale([(wire_width*3)/(wire_width*3 + thickness*2),1,1]).rotateY(90).translate([thickness*2 + wire_width,thickness, base_size[2] - 0.5 + wire_width*1.5]));
+     var cutout = cube([thickness*2 + wire_width*3 + clearance/2, full_track_length + clearance, wire_width + clearance]);
+     base = difference(base, cutout.translate([0,thickness - clearance/2,base_size[2] - 0.5 - wire_width/2 - clearance/2]));
+     base = difference(base, cutout.scale([(wire_width*3 + clearance)/(wire_width*3 + thickness*2 + clearance/2),1,1]).rotateY(90).translate([thickness*2 + wire_width - clearance/2,thickness - clearance/2, base_size[2] - 0.5 + wire_width*1.5 + clearance/2]));
      
      //breadboard
      var wire_cutout = cube([thickness,breadboard_length,wire_width*1.5]);
@@ -218,7 +225,9 @@
  
  function Cover()
  {
-     return cube();
+     var cover = cube();
+     
+     return cover;
  }
  
  function Sprayer()
@@ -237,7 +246,7 @@
      var base = Base();
      base = base.translate([0,0,bottle_height - sprayer_height]);
      
-     var cover = Cover();
+     //var cover = Cover();
      
      //var sprayer = Sprayer();
      //sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
@@ -246,17 +255,18 @@
      //handle = handle.rotateZ(-90);
      //handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2 + clearance/2]);
      
-     //var rail_a = Rail_A();
-     //rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
+     var rail_a = Rail_A();
+     rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
      
-     //var rail_b = Rail_B();
-     //rail_b = rail_b.translate([0,wire_width, bottle_height - sprayer_height]);
+     var rail_b = Rail_B();
+     rail_b = rail_b.translate([0,wire_width, bottle_height - sprayer_height]);
+     
+     var rail = union(rail_a, rail_b).translate([0,1,0]);
      
      return union(  base.setColor([0.2,0.2,0.2])
                     //,handle.setColor([0.2, 0.2, 0.2])
                     //,cover.setColor([0,0,0])
-                    //,rail_a.setColor([0.2,0.2,0.2])
-                    //,rail_b.setColor([0.2,0.2,0.2])
+                    ,rail.setColor([0.2,0.2,0.2])
                     //,sprayer.setColor([0.5,0.5,0.5])
                     );
  }
