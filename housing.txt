@@ -27,6 +27,7 @@
  var bottle_neck_offset = 5/8;
  
  var thickness = 3/16;
+ var clearance = 1/16;
  
  var wire_width = 3/32;
  
@@ -48,11 +49,11 @@
  var grip_radius = 1/8;
  var grip_size = [-(grip_radius*2 + stabilizer_height + stabilizer_radius),thickness,-grip_height];
  
- function Grip()
+ function Grip(size)
  {
-     var grip = cube(grip_size);
+     var grip = cube(size);
      
-     grip = union(grip, intersection(union(cylinder({'r': 5, 'h': thickness, 'fn': 128}), torus({'ro' : 5, 'ri': thickness*0.9, 'fno': 128}).translate([0,0,thickness*0.9/2])).rotateY(90).translate([grip_size[0],-4.5,-grip_height/2]), cube([grip_size[0], 2, grip_size[2]]).translate([grip_size[0]/2,0,0])));
+     grip = union(grip, intersection(union(cylinder({'r': 5, 'h': thickness, 'fn': 128}), torus({'ro' : 5, 'ri': thickness*0.9, 'fno': 128}).translate([0,0,thickness*0.9/2])).rotateY(90).translate([size[0],-4.5,-grip_height/2]), cube([size[0], 2, grip_size[2]]).translate([size[0]/2,0,0])));
      
      return grip;
  }
@@ -73,7 +74,7 @@
      base = union(base, stabilizer.rotateX(180).translate([0,base_size[1] - 1,stabilizer_radius + base_size[2] + 1/16]));
      
      //grip
-     base = union(base, Grip().translate([0,0,base_size[2]]));
+     base = union(base, Grip(grip_size).translate([0,0,base_size[2]]));
      
      //track and handle
      var track = cylinder({'r': handle_radius, 'h': thickness*2 + wire_width*3}).rotateY(90).translate([0,handle_radius,handle_radius/2]);
@@ -166,17 +167,23 @@
  {
      var rail = cube([-stabilizer_height + thickness, full_track_length*3/4, wire_width*3]);
      
-     rail = difference(rail, rail.scale([1,1,1/3]).translate([stabilizer_height - thickness*1.5 - 3/8,0,wire_width]));
+     rail = difference(rail.translate([-clearance/2,0,0]), rail.scale([1,1,1.1/3]).translate([stabilizer_height - thickness*1.5 - 3/8,0,wire_width]));
      
      var pin = cylinder({'r': pin_width*1.1/2});
      
      rail = difference(rail, pin.translate([-3/16,full_track_length/8,0]));
      rail = difference(rail, pin.translate([-3/16,full_track_length*3/8,0]));
      
-     rail = union(rail, cube([-stabilizer_height + thickness, -wire_width, wire_width*3]));
+     rail = union(rail, cube([-stabilizer_height + thickness, -wire_width, wire_width*3]).translate([-clearance/2,0,0]));
      rail = union(rail, cube([-stabilizer_height , -wire_width, wire_width]).translate([thickness,0,wire_width]));
      
-     rail = union(rail, Grip().mirroredY().translate([0, full_track_length*3/4 + thickness,0.5 + wire_width*1.5]));
+     var size = [grip_size[0] + clearance/2, grip_size[1], grip_size[2]];
+     rail = union(rail, Grip(size).mirroredY().translate([-clearance/2, full_track_length*3/4 + thickness,0.5 + wire_width*1.5]));
+     
+     rail = union(rail, cube([-stabilizer_height + thickness, full_track_length/4 - clearance, wire_width*1.1]).translate([-clearance/2, full_track_length/2 + clearance, wire_width]));
+     
+     var cube_side = 5/8;
+     rail = union(rail, intersection(cube(cube_side).translate([0,-cube_side/2,-cube_side/2]).rotateX(45), cube().translate([0,-1,-0.5])).translate([-clearance/2 - stabilizer_height/2 + thickness/2 - cube_side/2, full_track_length*3/4, wire_width*1.5]))
      
      return rail.translate([0,wire_width*2,base_size[2] - 0.5 - wire_width*1.5]);
  }
@@ -196,11 +203,11 @@
  
     handle = difference(handle, cylinder({'r': pin_width*1.1/2, 'h': handle_radius*2}).translate([0, 0, -handle_radius]));
  
-    handle = difference(handle, cube([track_size[0] + 1/8, track_size[1], track_size[2] + 1/8]).translate([-track_size[0] - 1/16, -0.4, -track_size[2]/2 - 1/16]));
+    handle = difference(handle, cube([track_size[0] + clearance, track_size[1], track_size[2] + clearance]).translate([-track_size[0] - clearance/2, -0.4, -track_size[2]/2 - clearance/2]));
  
-    handle = difference(handle, cube([1,-1,track_size[2] + 1/8]).translate([-0.5, -0.05,-track_size[2]/2 - 1/16]));
+    handle = difference(handle, cube([1,-1,track_size[2] + clearance]).translate([-0.5, 0,-track_size[2]/2 - clearance/2]));
     
-    handle = difference(handle, cylinder({'r': 1/4, 'h': track_size[2] + 1/8}).translate([0,0,-track_size[2]/2 - 1/16]));
+    handle = difference(handle, cylinder({'r': 1/4, 'h': track_size[2] + clearance}).translate([0,0,-track_size[2]/2 - clearance/2]));
  
     handle = difference(handle, cylinder({'r': 1/8}).translate([0,0,handle_radius - 1/16]));
  
@@ -227,8 +234,8 @@
  
  function main()
  {
-     //var base = Base();
-     //base = base.translate([0,0,bottle_height - sprayer_height]);
+     var base = Base();
+     base = base.translate([0,0,bottle_height - sprayer_height]);
      
      var cover = Cover();
      
@@ -236,19 +243,20 @@
      //sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
      //var handle = Handle();
-     //handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2]);
+     //handle = handle.rotateZ(-90);
+     //handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2 + clearance/2]);
      
-     var rail_a = Rail_A();
-     rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
+     //var rail_a = Rail_A();
+     //rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
      
-     var rail_b = Rail_B();
-     rail_b = rail_b.translate([0,wire_width, bottle_height - sprayer_height]);
+     //var rail_b = Rail_B();
+     //rail_b = rail_b.translate([0,wire_width, bottle_height - sprayer_height]);
      
-     return union(  //base.setColor([0.2,0.2,0.2])
+     return union(  base.setColor([0.2,0.2,0.2])
                     //,handle.setColor([0.2, 0.2, 0.2])
                     //,cover.setColor([0,0,0])
-                    rail_a.setColor([0.2,0.2,0.2])
-                    ,rail_b.setColor([0.2,0.2,0.2])
+                    //,rail_a.setColor([0.2,0.2,0.2])
+                    //,rail_b.setColor([0.2,0.2,0.2])
                     //,sprayer.setColor([0.5,0.5,0.5])
                     );
  }
