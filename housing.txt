@@ -1,4 +1,4 @@
- var max_wall_width = 5;
+var max_wall_width = 5;
  
  var laser_length = 1;
  var laser_radius = 7/32;
@@ -89,8 +89,8 @@
      track = difference(track, cylinder({'r': handle_radius, 'h': 1}).translate([thickness*3 + wire_width, handle_radius, -0.25]));
      track = difference(track, cube([handle_radius*2, handle_radius*2, 1]).translate([thickness*2 + wire_width*3 - handle_radius, handle_radius, -0.25]));
      track = union(track, cube(track_size));
-     track = union(track, cylinder({'r': 3/16, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width + 0.05, handle_radius, 0]));
-     track = difference(track, cylinder({'r': pin_width*1.1/2, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width + 0.05, handle_radius, 0]));
+     track = union(track, cylinder({'r': 3/16, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width + clearance, handle_radius, 0]));
+     track = difference(track, cylinder({'r': pin_width*1.1/2, 'h': wire_width + thickness*2}).translate([thickness*3 + wire_width + clearance, handle_radius, 0]));
      base = union(base, track.translate([thickness, handle_length - thickness, base_size[2] - track_size[2]/2 - 0.5]));
      
      var cutout = cube([thickness*2 + wire_width*3 + clearance/2, full_track_length + clearance, wire_width + clearance]);
@@ -127,10 +127,22 @@
         base = union(base, sensor.translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8,]));
      
      //cover snaps
+     var snap = cylinder({'r': 3/16, 'h': 1/4});
+     snap = union(snap, snap.translate([0,3/16,0]));
+     snap = union(snap, cube([3/8,1.5/8,1/4]).translate([-3/16,0,0]));
+     snap = difference(snap.rotateZ(-45), cube().rotateZ(180));
+     snap = union(snap, cylinder({'r': 1/16 - clearance/4, 'h': 1/4}).translate([-1/8 - clearance/4,0,0]));
+     snap = union(snap, cylinder({'r': 1/16 - clearance/4, 'h': 1/4}).translate([0,-1/8 - clearance/4,0]));
+     snap = difference(snap.rotateZ(135), cylinder({'r': 1/16 + clearance/2, 'h': 1/4}));
+     snap = snap.translate([thickness + 1.5/8,0,0]);
      
+     base = union(base, snap.translate([0, 1/16, (base_size[2] - 1 - thickness)*3/4 - 1/8]));
+     base = union(base, snap.translate([0, 1/16, (base_size[2] - 1 - thickness)/4 - 1/8]));
      
-     //motor holder holes
+     //motor holder holes and guides
      base = difference(base, hole.translate([0,bottle_radius + gear_offset + gear_width/2 + motor_length - thickness*3/2, base_size[2] - 1 - thickness - 1/4]));
+     base = union(base, cube(wire_width).translate([thickness, bottle_radius + gear_offset + gear_width/2 + motor_length - thickness*3/2 - 3/8 - clearance/2, thickness + clearance]));
+     base = union(base, cube(wire_width).translate([thickness, bottle_radius + gear_offset + gear_width/2 + motor_length - thickness*3/2 + 3/8 - wire_width + clearance/2, thickness + clearance]));
      
      //bottle holder
      var holder = cylinder({'r': bottle_neck_radius + thickness, 'h': 1/8});
@@ -257,7 +269,13 @@
  
  function Cover()
  {
-     var cover = cube();
+     var cover = cube([sprayer_length - clearance, base_size[1], base_size[2] - 1 - thickness]);
+     cover = difference(cover, cube([sprayer_length - thickness, base_size[1] - thickness*2 + clearance, base_size[2] - 1 - thickness*3 + clearance]).translate([0,thickness - clearance/2,thickness - clearance/2]));
+     
+     cover = difference(cover, cube([5/16, thickness, 1/4 + clearance]).translate([0,0,(base_size[2] - 1 - thickness)*3/4 - 1/8 - clearance/2]));
+     cover = difference(cover, cube([5/16, thickness, 1/4 + clearance]).translate([0,0,(base_size[2] - 1 - thickness)/4 - 1/8 - clearance/2]));
+     
+     cover = union(cover, cylinder({'r': 1/16, 'h': base_size[2] -1 - thickness}).translate([1/8, 1/16,0]));
      
      return cover;
  }
@@ -273,22 +291,28 @@
      return union(sprayer,bottle);
  }
  
+ function Sensor_Holder()
+ {
+     
+ }
+ 
  function main()
  {
      var base = Base();
      base = base.translate([0,0,bottle_height - sprayer_height]);
      
      var cover = Cover();
+     cover = cover.translate([thickness + clearance,0,bottle_height - sprayer_height]);
      
-     var sprayer = Sprayer();
-     sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
+     //var sprayer = Sprayer();
+     //sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
      //var handle = Handle();
      //handle = handle.rotateZ(-90);
-     //handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2 + clearance/2]);
+     //handle = handle.translate([thickness*3 + wire_width*3 + clearance,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2 + clearance/2]);
      
-     var motor_holder = Motor_Holder();
-     motor_holder = motor_holder.translate([0,0, bottle_height - sprayer_height + thickness]);
+     //var motor_holder = Motor_Holder();
+     //motor_holder = motor_holder.translate([0,0, bottle_height - sprayer_height + thickness]);
      
      //var rail_a = Rail_A();
      //rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
@@ -298,11 +322,11 @@
      
      //var rail = union(rail_a, rail_b).translate([0,1,0]);
      
-     return union(  cover.setColor([0,0,0])
+     return union(  cover.setColor([0.2,0.2,0.2])
                     ,base.setColor([0.2,0.2,0.2])
                     //,handle.setColor([0.2, 0.2, 0.2])
                     //,rail.setColor([0.2,0.2,0.2])
-                    ,motor_holder.setColor([0.2,0.2,0.2])
+                    //,motor_holder.setColor([0.2,0.2,0.2])
                     //,sprayer.setColor([0.5,0.5,0.5])
                     );
  }
