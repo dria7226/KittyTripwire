@@ -103,6 +103,8 @@
      
      base = difference(base, wire_cutout.translate([0,bottle_radius*2 + thickness, thickness + breadboard_height + wire_width*1.5]));
      
+     //cut holes
+     
      //laser and sensor
         //laser
         var laser = cube([laser_length + 1/4, laser_radius*2, laser_radius + 1/8]).translate([0,0,-1/8]);
@@ -124,20 +126,45 @@
      //cover snaps
      
      
-     //holders
-        //motor holder
-        var motor_holder = cylinder({'r': motor_radius + thickness, 'h': motor_length});
-        motor_holder = intersection(motor_holder, cube([motor_length, motor_length, motor_length]));
-        var motor_bezel = cylinder({'r': thickness/2, 'h': motor_length});
-        motor_holder = union(motor_holder, motor_bezel.translate([0,motor_radius + thickness/2,0]));
-        motor_holder = union(motor_holder, motor_bezel.translate([motor_radius + thickness/2,0,0]));
-        motor_holder = motor_holder.rotateZ(45);
-        motor_holder = union(motor_holder, cube([0.7,1,motor_length - thickness*3]).translate([-0.35,0,thickness*3/2]));
-        motor_holder = difference(motor_holder, cylinder({'r':motor_radius, 'h': motor_length}));
-        
-        base = union(base, motor_holder.rotateY(90).translate([-motor_length/2,-1,0]).rotateZ(90).translate([thickness,bottle_radius + motor_length/2 + gear_offset + gear_width/2,thickness + breadboard_height/2 + wire_width*1.5]));
-        
+     //motor holder holes
+     var hole = cylinder({'r': 1/16}).rotateY(90);
+     base = difference(base, hole.translate([0,bottle_radius + gear_offset + gear_width/2 + motor_length - thickness*3/2, base_size[2] - 1 - thickness - 1/4]));
+     
+     //bottle holder
+     var holder = cylinder({'r': bottle_neck_radius + thickness, 'h': 1/8});
+     holder = difference(holder, cube(bottle_neck_radius + thickness));
+     holder = union(holder, cylinder({'r': thickness/2 - clearance/2, 'h': 1/8}).translate([bottle_neck_radius + thickness/2 + clearance/2,0,0]));
+     holder = union(holder, cylinder({'r': thickness/2 - clearance/2, 'h': 1/8}).translate([0,bottle_neck_radius + thickness/2 + clearance/2,0]));
+     holder = difference(holder, cylinder({'r': bottle_neck_radius + clearance}));
+     holder = holder.rotateZ(-45).translate([thickness + sprayer_width/2,bottle_radius,-bottle_neck_offset]);
+     
+     
+     base = union(base, holder);
+     
      return base;
+ }
+ 
+ function Motor_Holder()
+ {
+    //motor holder
+    var motor_holder = cylinder({'r': motor_radius + thickness, 'h': motor_length});
+    motor_holder = intersection(motor_holder, cube([motor_length, motor_length, motor_length]));
+    var motor_bezel = cylinder({'r': thickness/2, 'h': motor_length});
+    motor_holder = union(motor_holder, motor_bezel.translate([0,motor_radius + thickness/2,0]));
+    motor_holder = union(motor_holder, motor_bezel.translate([motor_radius + thickness/2,0,0]));
+    motor_holder = motor_holder.rotateZ(135);
+    motor_holder = union(motor_holder, cube([-1,0.7,motor_length - thickness*3]).translate([-0.5,-0.35,thickness*3/2]));
+    motor_holder = difference(motor_holder, cylinder({'r':motor_radius, 'h': motor_length}));
+    
+    motor_holder = motor_holder.rotateX(-90).translate([1.5, 0, base_size[2]/2 - 0.5 - thickness]);
+    
+    motor_holder = union(motor_holder, cube([thickness, motor_length - thickness*3, base_size[2] - 1 - thickness*2 - clearance]).translate([0,motor_length/2 - motor_length/2 + thickness*3/2,clearance/2]));
+    
+    //holes
+    var hole = cylinder({'r': 1/16}).rotateY(90).translate([0,motor_length/2, 0]);
+    motor_holder = difference(motor_holder, hole.translate([0,0,base_size[2] - 1 - thickness*2 - 1/4]));
+    
+    return motor_holder.translate([thickness, bottle_radius + sprayer_width/2 + gear_offset + gear_width/2,0]);
  }
  
  function Rail_A()
@@ -213,11 +240,9 @@
     handle = difference(handle, cube([track_size[0] + clearance, track_size[1], track_size[2] + clearance]).translate([-track_size[0] - clearance/2, -0.4, -track_size[2]/2 - clearance/2]));
  
     handle = difference(handle, cube([1,-1,track_size[2] + clearance]).translate([-0.5, 0,-track_size[2]/2 - clearance/2]));
-    
     handle = difference(handle, cylinder({'r': 1/4, 'h': track_size[2] + clearance}).translate([0,0,-track_size[2]/2 - clearance/2]));
  
     handle = difference(handle, cylinder({'r': 1/8}).translate([0,0,handle_radius - 1/16]));
- 
     handle = difference(handle, cylinder({'r': 1/8}).translate([0,0,-1 - handle_radius + 1/16]));
  
     return handle;
@@ -246,27 +271,31 @@
      var base = Base();
      base = base.translate([0,0,bottle_height - sprayer_height]);
      
-     //var cover = Cover();
+     var cover = Cover();
      
-     //var sprayer = Sprayer();
-     //sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
+     var sprayer = Sprayer();
+     sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
      //var handle = Handle();
      //handle = handle.rotateZ(-90);
      //handle = handle.translate([thickness*3 + wire_width*3 + 0.05,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2 + clearance/2]);
      
-     var rail_a = Rail_A();
-     rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
+     var motor_holder = Motor_Holder();
+     motor_holder = motor_holder.translate([0,0, bottle_height - sprayer_height + thickness]);
      
-     var rail_b = Rail_B();
-     rail_b = rail_b.translate([0,wire_width, bottle_height - sprayer_height]);
+     //var rail_a = Rail_A();
+     //rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
      
-     var rail = union(rail_a, rail_b).translate([0,1,0]);
+     //var rail_b = Rail_B();
+     //rail_b = rail_b.translate([0,wire_width, bottle_height - sprayer_height]);
      
-     return union(  base.setColor([0.2,0.2,0.2])
+     //var rail = union(rail_a, rail_b).translate([0,1,0]);
+     
+     return union(  cover.setColor([0,0,0])
+                    ,base.setColor([0.2,0.2,0.2])
                     //,handle.setColor([0.2, 0.2, 0.2])
-                    //,cover.setColor([0,0,0])
-                    ,rail.setColor([0.2,0.2,0.2])
+                    //,rail.setColor([0.2,0.2,0.2])
+                    ,motor_holder.setColor([0.2,0.2,0.2])
                     //,sprayer.setColor([0.5,0.5,0.5])
                     );
  }
