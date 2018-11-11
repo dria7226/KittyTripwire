@@ -60,6 +60,7 @@
  
  function Base()
  {
+     var hole = cylinder({'r': 1/16}).rotateY(90);
      var base = cube(base_size);
      
      //stabilizers
@@ -104,6 +105,8 @@
      base = difference(base, wire_cutout.translate([0,bottle_radius*2 + thickness, thickness + breadboard_height + wire_width*1.5]));
      
      //cut holes
+     base = difference(base, hole.scale([1,1,1]).translate([0,bottle_radius*2 + thickness + breadboard_length/4, thickness + breadboard_height/2 + wire_width*1.5]));
+     base = difference(base, hole.scale([1,1,1]).translate([0,bottle_radius*2 + thickness + breadboard_length*3/4, thickness + breadboard_height/2 + wire_width*1.5]));
      
      //laser and sensor
         //laser
@@ -127,7 +130,6 @@
      
      
      //motor holder holes
-     var hole = cylinder({'r': 1/16}).rotateY(90);
      base = difference(base, hole.translate([0,bottle_radius + gear_offset + gear_width/2 + motor_length - thickness*3/2, base_size[2] - 1 - thickness - 1/4]));
      
      //bottle holder
@@ -138,6 +140,11 @@
      holder = difference(holder, cylinder({'r': bottle_neck_radius + clearance}));
      holder = holder.rotateZ(-45).translate([thickness + sprayer_width/2,bottle_radius,-bottle_neck_offset]);
      
+     holder = union(holder, cube([-1, 3/4, 1/8]).translate([-bottle_neck_radius + sprayer_width/2 + thickness - clearance, bottle_radius - 3/8, -bottle_neck_offset]));
+     holder = union(holder, cube([-3/4, 3/4,-bottle_neck_offset - 1/2]).translate([-bottle_neck_radius + sprayer_width/2 + thickness - clearance - 1/4, bottle_radius - 3/8, 1/2]));
+     
+     holder = union(holder, support.rotateX(90).scale([1.8,-2.2857, 1.9]).translate([0, bottle_radius - 3/8, 1/4]));
+     holder = union(holder, support.rotateX(90).rotateZ(180).scale([0.4,2.2857,0.5]).translate([-bottle_neck_radius + clearance, bottle_radius - 3/8, -bottle_neck_offset + 1/8]));
      
      base = union(base, holder);
      
