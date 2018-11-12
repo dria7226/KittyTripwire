@@ -270,12 +270,31 @@ var max_wall_width = 5;
  function Cover()
  {
      var cover = cube([sprayer_length - clearance, base_size[1], base_size[2] - 1 - thickness]);
+     cover = difference(cover, cube([sprayer_length, thickness, thickness]));
+     
+     //bevel
+     cover = difference(cover, cube([sprayer_length, thickness, thickness]).translate([0,0,base_size[2] - 1 - thickness*2]));
+     cover = difference(cover, cube([sprayer_length, thickness, thickness]).translate([0,base_size[1] - thickness,0]));
+     cover = difference(cover, cube([sprayer_length, thickness, thickness]).translate([0,base_size[1] - thickness, base_size[2] - 1 - thickness*2]));
+     cover = difference(cover, cube([thickness, thickness, base_size[2]]).translate([sprayer_length - thickness,0,0]));
+     cover = difference(cover, cube([thickness, thickness, base_size[2]]).translate([sprayer_length - thickness, base_size[1] - thickness,0]));
+     cover = difference(cover, cube([thickness, base_size[1], thickness]).translate([sprayer_length - thickness,0,0]));
+     cover = difference(cover, cube([thickness, base_size[1], thickness]).translate([sprayer_length - thickness,0,base_size[2] - 1 - thickness*2]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, base_size[1] - thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, base_size[1] - thickness, base_size[2] - 1 - thickness*2]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, thickness, base_size[2] - 1 - thickness*2]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': base_size[1] - clearance - thickness*2}).rotateX(-90).translate([sprayer_length - thickness - clearance, thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': base_size[1] - clearance - thickness*2}).rotateX(-90).translate([sprayer_length - thickness - clearance, thickness, base_size[2] - 1 - thickness*2]));
+     
      cover = difference(cover, cube([sprayer_length - thickness, base_size[1] - thickness*2 + clearance, base_size[2] - 1 - thickness*3 + clearance]).translate([0,thickness - clearance/2,thickness - clearance/2]));
      
      cover = difference(cover, cube([5/16, thickness, 1/4 + clearance]).translate([0,0,(base_size[2] - 1 - thickness)*3/4 - 1/8 - clearance/2]));
      cover = difference(cover, cube([5/16, thickness, 1/4 + clearance]).translate([0,0,(base_size[2] - 1 - thickness)/4 - 1/8 - clearance/2]));
      
-     cover = union(cover, cylinder({'r': 1/16, 'h': base_size[2] -1 - thickness}).translate([1/8, 1/16,0]));
+     cover = union(cover, cylinder({'r': 1/16, 'h': base_size[2] -1 - thickness*3}).translate([1/8, 1/16,thickness]));
      
      return cover;
  }
@@ -298,8 +317,8 @@ var max_wall_width = 5;
  
  function main()
  {
-     var base = Base();
-     base = base.translate([0,0,bottle_height - sprayer_height]);
+     //var base = Base();
+     //base = base.translate([0,0,bottle_height - sprayer_height]);
      
      var cover = Cover();
      cover = cover.translate([thickness + clearance,0,bottle_height - sprayer_height]);
@@ -323,7 +342,7 @@ var max_wall_width = 5;
      //var rail = union(rail_a, rail_b).translate([0,1,0]);
      
      return union(  cover.setColor([0.2,0.2,0.2])
-                    ,base.setColor([0.2,0.2,0.2])
+                    //,base.setColor([0.2,0.2,0.2])
                     //,handle.setColor([0.2, 0.2, 0.2])
                     //,rail.setColor([0.2,0.2,0.2])
                     //,motor_holder.setColor([0.2,0.2,0.2])
