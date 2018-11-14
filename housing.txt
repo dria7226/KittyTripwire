@@ -38,7 +38,7 @@ var max_wall_width = 5;
  var stabilizer_height = breadboard_thickness + thickness*2;
  
  //track
- var pin_width = wire_width;
+ var pin_width = 0.16;
  var handle_radius = 7/16;
  var full_track_length = base_size[1] - thickness*3;
  var handle_length = full_track_length/2 + thickness*2;
