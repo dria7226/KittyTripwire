@@ -2,7 +2,7 @@ var max_wall_width = 5;
  
  var laser_length = 1;
  var laser_radius = 7/32;
- var laser_big_radius = 7/16;
+ var laser_big_radius = 1/4;
  var laser_offset = 5/8;
  
  var sprayer_width = 9/16;
@@ -20,6 +20,7 @@ var max_wall_width = 5;
  var breadboard_length = 1 + 7/8 + 1/16;
  var breadboard_height = 1 + 3/8;
  var breadboard_thickness = 5/8;
+ var breadboard_hole_length = 1.5 - 1/32;
  
  var bottle_height = 8.75;
  var bottle_radius = 2.75; bottle_radius /= 2;
@@ -105,17 +106,17 @@ var max_wall_width = 5;
      base = difference(base, wire_cutout.translate([0,bottle_radius*2 + thickness, thickness + breadboard_height + wire_width*1.5]));
      
      //cut holes
-     base = difference(base, hole.scale([1,1,1]).translate([0,bottle_radius*2 + thickness + breadboard_length/4, thickness + breadboard_height/2 + wire_width*1.5]));
-     base = difference(base, hole.scale([1,1,1]).translate([0,bottle_radius*2 + thickness + breadboard_length*3/4, thickness + breadboard_height/2 + wire_width*1.5]));
+     base = difference(base, hole.scale([1,0.5,0.5]).translate([0,bottle_radius*2 + thickness + breadboard_length/2 - breadboard_hole_length/2, thickness + breadboard_height/2 + wire_width*1.5]));
+     base = difference(base, hole.scale([1,0.5,0.5]).translate([0,bottle_radius*2 + thickness + breadboard_length/2 + breadboard_hole_length/2, thickness + breadboard_height/2 + wire_width*1.5]));
      
      //laser and sensor
         //laser
-        var laser = cube([laser_length + 1/4, laser_radius*2, laser_radius + 1/8]).translate([0,0,-1/8]);
-        laser = difference(laser, cylinder({'r' : laser_radius, 'h' : laser_length}).rotateY(90).translate([0,laser_radius,laser_radius]));
-        laser = difference(laser, cylinder({'r' : laser_radius*0.75, 'h' : laser_length}).rotateY(90).translate([1,laser_radius,laser_radius]));
+        var laser = cube([laser_offset + 1/4, laser_radius*2, laser_radius + 1/8]).translate([0,0,-1/8]);
+        laser = difference(laser, difference(cylinder({'r' : laser_radius, 'h' : laser_offset}).rotateY(90), cube([thickness,-laser_radius + 5/32,-1]).translate([laser_offset - thickness,laser_radius,0]),cube([thickness,laser_radius - 5/32,-1]).translate([laser_offset - thickness,-laser_radius,0])).translate([0,laser_radius,laser_radius]));
+        laser = difference(laser, cylinder({'r' : laser_big_radius + clearance, 'h' : 1/8}).rotateY(90).translate([laser_offset - clearance/2,laser_radius,laser_radius]));
         laser = difference(laser, cube([1/16, laser_radius*2, laser_radius*2]).translate([laser_length + 3/32,0,0]));
-        laser = difference(laser, cube([laser_length, laser_radius*2, laser_radius*2]).translate([0,0,laser_radius - 3/32]));
-        
+        laser = difference(laser, cube([laser_offset - thickness, laser_radius*2, laser_radius*2]).translate([0,0,laser_radius - 3/32]));
+        laser = difference(laser, cylinder({'r' : laser_radius, 'h' : laser_offset}).rotateY(90).translate([laser_offset+1/8 - clearance,laser_radius,laser_radius]));
         base = union(base, laser.translate([thickness,bottle_radius*2 + breadboard_length + thickness*2.5,sprayer_height/2 + laser_radius + 1/8]));
         
         //sensor - pointing down
@@ -317,11 +318,11 @@ var max_wall_width = 5;
  
  function main()
  {
-     //var base = Base();
-     //base = base.translate([0,0,bottle_height - sprayer_height]);
+     var base = Base();
+     base = base.translate([0,0,bottle_height - sprayer_height]);
      
-     var cover = Cover();
-     cover = cover.translate([thickness + clearance,0,bottle_height - sprayer_height]);
+     //var cover = Cover();
+     //cover = cover.translate([thickness + clearance,0,bottle_height - sprayer_height]);
      
      //var sprayer = Sprayer();
      //sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
@@ -341,8 +342,8 @@ var max_wall_width = 5;
      
      //var rail = union(rail_a, rail_b).translate([0,1,0]);
      
-     return union(  cover.setColor([0.2,0.2,0.2])
-                    //,base.setColor([0.2,0.2,0.2])
+     return union(  //cover.setColor([0.2,0.2,0.2])
+                    base.setColor([0.2,0.2,0.2])
                     //,handle.setColor([0.2, 0.2, 0.2])
                     //,rail.setColor([0.2,0.2,0.2])
                     //,motor_holder.setColor([0.2,0.2,0.2])
