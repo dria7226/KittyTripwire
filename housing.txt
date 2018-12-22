@@ -59,6 +59,16 @@ var max_wall_width = 5;
      return grip;
  }
  
+ function IO_Holder()
+ {
+    var holder = cube([3/16, 3/16 + thickness, 0.5 + thickness]);
+        
+    holder = difference(holder, cube([3/32, 3/16, 0.5]).translate([0,thickness/2,0]));
+    holder = difference(holder, cube([1/16, 1/8, 0.5 + thickness]).translate([0,wire_width,0]));
+ 
+    return holder;
+ }
+ 
  function Base()
  {
      var hole = cylinder({'r': 1/16}).rotateY(90);
@@ -120,12 +130,7 @@ var max_wall_width = 5;
         base = union(base, laser.translate([thickness,bottle_radius*2 + breadboard_length + thickness*2.5,sprayer_height/2 + laser_radius + 1/8]));
         
         //sensor - pointing down
-        var sensor = cube([wire_width*2, wire_width*5, 0.5]);
-        
-        sensor = difference(sensor, cube([wire_width*2, wire_width, 0.5]).translate([0,wire_width*2,0]));
-        sensor = difference(sensor, cube([wire_width, wire_width*3, 0.5 - wire_width]).translate([0,wire_width,0]));
-        
-        base = union(base, sensor.translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8,]));
+        base = union(base, IO_Holder().translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8,]));
      
      //cover snaps
      var snap = cylinder({'r': 3/16, 'h': 1/4});
@@ -348,5 +353,5 @@ var max_wall_width = 5;
                     //,rail.setColor([0.2,0.2,0.2])
                     //,motor_holder.setColor([0.2,0.2,0.2])
                     //,sprayer.setColor([0.5,0.5,0.5])
-                    );
+                    ).scale(25.4); // inches to millimeters
  }
