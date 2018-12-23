@@ -132,7 +132,7 @@ var max_wall_width = 5;
         base = union(base, laser.translate([thickness,bottle_radius*2 + breadboard_length + thickness*2.5,sprayer_height/2 + laser_radius + 1/8]));
         
         //sensor - pointing down
-        base = union(base, IO_Holder().translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8,]));
+        base = union(base, IO_Holder().translate([thickness,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8,0]));
      
      //cover snaps
      var snap = cylinder({'r': 3/16, 'h': 1/4});
@@ -146,6 +146,14 @@ var max_wall_width = 5;
      
      base = union(base, snap.translate([0, 1/16, (base_size[2] - 1 - thickness)*3/4 - 1/8]));
      base = union(base, snap.translate([0, 1/16, (base_size[2] - 1 - thickness)/4 - 1/8]));
+     
+     snap = cube([1, thickness/4, 1/4]);
+     snap = union(snap, intersection(cube([1/2,thickness/4 + 3/32, 1/4]).rotateZ(-10), cube([1/2 - 1/16,thickness/4 + 3/32, 1/4])).translate([1 - 1/16, 0,0]));
+     
+     base = union(base, snap.translate([thickness, base_size[1] - thickness - clearance/2, .5]));
+     
+     base = union(base, cube(clearance).translate([thickness - clearance/2, base_size[1] - thickness/2 - clearance/2, (base_size[2] - 1)/4]));
+     base = union(base, cube(clearance).translate([thickness - clearance/2, base_size[1] - thickness/2 - clearance/2, (base_size[2] - 1)*3/4]));
      
      //motor holder holes and guides
      base = difference(base, hole.translate([0,bottle_radius + gear_offset + gear_width/2 + motor_length - thickness*3/2, base_size[2] - 1 - thickness - 1/4]));
@@ -269,38 +277,62 @@ var max_wall_width = 5;
     handle = difference(handle, cube([1,-1,track_size[2] + clearance]).translate([-0.5, 0,-track_size[2]/2 - clearance/2]));
     handle = difference(handle, cylinder({'r': 1/4, 'h': track_size[2] + clearance}).translate([0,0,-track_size[2]/2 - clearance/2]));
  
-    handle = difference(handle, cylinder({'r': 1/8}).translate([0,0,handle_radius - 1/16]));
-    handle = difference(handle, cylinder({'r': 1/8}).translate([0,0,-1 - handle_radius + 1/16]));
+    handle = difference(handle, cylinder({'r': 3/16}).translate([0,0,handle_radius - 1/16]));
+    handle = difference(handle, cylinder({'r': 3/16}).translate([0,0,-1 - handle_radius + 1/16]));
  
     return handle;
  }
  
  function Cover()
  {
-     var cover = cube([sprayer_length - clearance, base_size[1], base_size[2] - 1 - thickness]);
+     var cover = cube([sprayer_length - .5 - clearance, base_size[1], base_size[2] - 1 - thickness]);
      cover = difference(cover, cube([sprayer_length, thickness, thickness]));
      
      //bevel
-     cover = difference(cover, cube([sprayer_length, thickness, thickness]).translate([0,0,base_size[2] - 1 - thickness*2]));
-     cover = difference(cover, cube([sprayer_length, thickness, thickness]).translate([0,base_size[1] - thickness,0]));
-     cover = difference(cover, cube([sprayer_length, thickness, thickness]).translate([0,base_size[1] - thickness, base_size[2] - 1 - thickness*2]));
-     cover = difference(cover, cube([thickness, thickness, base_size[2]]).translate([sprayer_length - thickness,0,0]));
-     cover = difference(cover, cube([thickness, thickness, base_size[2]]).translate([sprayer_length - thickness, base_size[1] - thickness,0]));
-     cover = difference(cover, cube([thickness, base_size[1], thickness]).translate([sprayer_length - thickness,0,0]));
-     cover = difference(cover, cube([thickness, base_size[1], thickness]).translate([sprayer_length - thickness,0,base_size[2] - 1 - thickness*2]));
-     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, thickness, thickness]));
-     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, base_size[1] - thickness, thickness]));
-     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, base_size[1] - thickness, base_size[2] - 1 - thickness*2]));
-     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, thickness, base_size[2] - 1 - thickness*2]));
-     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, thickness, thickness]));
-     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - thickness}).rotateY(90).translate([0, thickness, thickness]));
-     cover = union(cover, cylinder({'r': thickness, 'h': base_size[1] - clearance - thickness*2}).rotateX(-90).translate([sprayer_length - thickness - clearance, thickness, thickness]));
-     cover = union(cover, cylinder({'r': thickness, 'h': base_size[1] - clearance - thickness*2}).rotateX(-90).translate([sprayer_length - thickness - clearance, thickness, base_size[2] - 1 - thickness*2]));
+     cover = difference(cover, cube([sprayer_length - .5, thickness, thickness]).translate([0,0,base_size[2] - 1 - thickness*2]));
+     cover = difference(cover, cube([sprayer_length - .5, thickness, thickness]).translate([0,base_size[1] - thickness,0]));
+     cover = difference(cover, cube([sprayer_length - .5, thickness, thickness]).translate([0,base_size[1] - thickness, base_size[2] - 1 - thickness*2]));
+     cover = difference(cover, cube([thickness, thickness, base_size[2]]).translate([sprayer_length - .5 - thickness,0,0]));
+     cover = difference(cover, cube([thickness, thickness, base_size[2]]).translate([sprayer_length - .5 - thickness, base_size[1] - thickness,0]));
+     cover = difference(cover, cube([thickness, base_size[1], thickness]).translate([sprayer_length - .5 - thickness,0,0]));
+     cover = difference(cover, cube([thickness, base_size[1], thickness]).translate([sprayer_length - .5 - thickness,0,base_size[2] - 1 - thickness*2]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - .5 - thickness}).rotateY(90).translate([0, thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - .5 - thickness}).rotateY(90).translate([0, base_size[1] - thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - .5 - thickness}).rotateY(90).translate([0, base_size[1] - thickness, base_size[2] - 1 - thickness*2]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - .5 - thickness}).rotateY(90).translate([0, thickness, base_size[2] - 1 - thickness*2]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - .5 - thickness}).rotateY(90).translate([0, thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': sprayer_length - .5 - thickness}).rotateY(90).translate([0, thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': base_size[1] - thickness*2}).rotateX(-90).scale([(thickness-clearance)/thickness,1,1]).translate([sprayer_length - .5 - thickness, thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': base_size[1] - thickness*2}).rotateX(-90).scale([(thickness-clearance)/thickness,1,1]).translate([sprayer_length - .5 - thickness, thickness, base_size[2] - 1 - thickness*2]));
+     cover = union(cover, cylinder({'r': thickness, 'h': base_size[2] - thickness*3 - 1}).scale([(thickness-clearance)/thickness,1,1]).translate([sprayer_length - .5 - thickness, thickness, thickness]));
+     cover = union(cover, cylinder({'r': thickness, 'h': base_size[2] - thickness*3 - 1}).scale([(thickness-clearance)/thickness,1,1]).translate([sprayer_length - .5 - thickness, base_size[1] - thickness, thickness]));
      
-     cover = difference(cover, cube([sprayer_length - thickness, base_size[1] - thickness*2 + clearance, base_size[2] - 1 - thickness*3 + clearance]).translate([0,thickness - clearance/2,thickness - clearance/2]));
+     cover = union(cover, sphere(thickness).scale([(thickness - clearance)/thickness, 1,1]).translate([sprayer_length - .5 - thickness, thickness, thickness]));
+     cover = union(cover, sphere(thickness).scale([(thickness - clearance)/thickness, 1,1]).translate([sprayer_length - .5 - thickness, thickness, base_size[2] - 1 - thickness*2]));
+     cover = union(cover, sphere(thickness).scale([(thickness - clearance)/thickness, 1,1]).translate([sprayer_length - .5 - thickness, base_size[1] - thickness, thickness]));
+     cover = union(cover, sphere(thickness).scale([(thickness - clearance)/thickness, 1,1]).translate([sprayer_length - .5 - thickness, base_size[1] - thickness, base_size[2] - 1 - thickness*2]));
+     
+     cover = difference(cover, cube(sprayer_width + clearance).translate([sprayer_length - .5 - sprayer_width,bottle_radius - sprayer_width/2 - clearance/2,sprayer_height - sprayer_width - clearance/2]));
+     cover = difference(cover, intersection(sphere({'r': (sprayer_width/2+clearance)*sqrt(2), 'fn': 64}).rotateY(90).scale([.3,1,1]), cube(sprayer_width + clearance).translate([-sprayer_width/2 - clearance/2, -sprayer_width/2 - clearance/2,-sprayer_width])).translate([sprayer_length - .5 - clearance,bottle_radius,sprayer_height - sprayer_width/2]));
+     cover = difference(cover, cylinder({'r': cap_radius + clearance, 'h': thickness}).translate([sprayer_width/2 - clearance, bottle_radius, 0]));
+     
+     //laser
+     cover = difference(cover, cylinder({'r': laser_radius, 'h': sprayer_length*2}).rotateY(90).translate([0,bottle_radius*2 + breadboard_length + thickness*2.5 + laser_radius,sprayer_height/2 + laser_radius*2 + 1/8]));
+     
+     //sensor
+     cover = difference(cover, cube([3/16 + clearance/2, 3/16 + thickness + clearance, thickness]).translate([-clearance,bottle_radius*2 + breadboard_length + thickness*1.5 + wire_width*1.8 - clearance/2,0]));
+     
+     cover = difference(cover, cube([sprayer_length - .5 - thickness, base_size[1] - thickness*2 + clearance, base_size[2] - 1 - thickness*3 + clearance]).translate([0,thickness - clearance/2,thickness - clearance/2]));
      
      cover = difference(cover, cube([5/16, thickness, 1/4 + clearance]).translate([0,0,(base_size[2] - 1 - thickness)*3/4 - 1/8 - clearance/2]));
      cover = difference(cover, cube([5/16, thickness, 1/4 + clearance]).translate([0,0,(base_size[2] - 1 - thickness)/4 - 1/8 - clearance/2]));
+     
+     //snap
+     cover = difference(cover, cube([1/2 - 3/32 + clearance, thickness, 1/2]).translate([1 - 1/16 - clearance, base_size[1] - thickness, 1/2 - 1/8]));
+     cover = union(cover, intersection(cylinder({'r': 1/4, 'h': thickness/2}).rotateY(90).translate([0,0,1/4]), cube()).translate([0, base_size[1], -1/4 + 1/2 + clearance/2 + 1/8]));
+     
+     //wire space
+     cover = difference(cover, cylinder({'r': thickness - clearance/2, 'h': breadboard_length}).rotateX(-90).translate([0,bottle_radius*2 + thickness, base_size[2] - 1 - thickness*2]));
      
      cover = union(cover, cylinder({'r': 1/16, 'h': base_size[2] -1 - thickness*3}).translate([1/8, 1/16,thickness]));
      
@@ -332,32 +364,32 @@ var max_wall_width = 5;
      var base = Base();
      base = base.translate([0,0,bottle_height - sprayer_height]);
      
-     //var cover = Cover();
-     //cover = cover.translate([thickness + clearance,0,bottle_height - sprayer_height]);
+     var cover = Cover();
+     cover = cover.translate([thickness + clearance,0,bottle_height - sprayer_height]);
      
      var sprayer = Sprayer();
      sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
-     var handle = Handle();
-     handle = handle.rotateZ(-90);
-     handle = handle.translate([thickness*3 + wire_width*3 + clearance,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2 + clearance/2]);
+     //var handle = Handle();
+     //handle = handle.rotateZ(-90);
+     //handle = handle.translate([thickness*3 + wire_width*3 + clearance,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2 + clearance/2]);
      
-     var motor_holder = Motor_Holder();
-     motor_holder = motor_holder.translate([0,0, bottle_height - sprayer_height + thickness]);
+     //var motor_holder = Motor_Holder();
+     //motor_holder = motor_holder.translate([0,0, bottle_height - sprayer_height + thickness]);
      
-     var rail_a = Rail_A();
-     rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
+     //var rail_a = Rail_A();
+     //rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
      
-     var rail_b = Rail_B();
-     rail_b = rail_b.translate([0,wire_width, bottle_height - sprayer_height]);
+     //var rail_b = Rail_B();
+     //rail_b = rail_b.translate([0,wire_width, bottle_height - sprayer_height]);
      
-     var rail = union(rail_a, rail_b).translate([0,1,0]);
+     //var rail = union(rail_a, rail_b).translate([0,1,0]);
      
-     return union(  //cover.setColor([0.2,0.2,0.2])
-                    base.setColor([0.2,0.2,0.2])
-                    ,handle.setColor([0.2, 0.2, 0.2])
-                    ,rail.setColor([0.2,0.2,0.2])
-                    ,motor_holder.setColor([0.2,0.2,0.2])
-                    ,sprayer.setColor([0.5,0.5,0.5])
+     return union(  cover.setColor([0.2,0.2,0.2])
+                    ,base.setColor([0.2,0.2,0.2])
+                    //,handle.setColor([0.2, 0.2, 0.2])
+                    //,rail.setColor([0.2,0.2,0.2])
+                    //,motor_holder.setColor([0.2,0.2,0.2])
+                    //,sprayer.setColor([0.5,0.5,0.5])
                     ).scale(25.4); // inches to millimeters
  }
