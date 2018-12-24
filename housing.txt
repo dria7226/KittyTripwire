@@ -40,6 +40,10 @@ var max_wall_width = 5;
  var stabilizer_radius = 1/4;
  var stabilizer_height = breadboard_thickness + thickness*2;
  
+ //guides
+ var guide_length = 1;
+ var guide_radius = 3/16; guide_radius /=2;
+ 
  //track
  var pin_width = 0.16;
  var handle_radius = 7/16;
@@ -48,7 +52,7 @@ var max_wall_width = 5;
  var track_size  = [thickness*2 + wire_width*3, full_track_length/2 + thickness/2, thickness*2 + wire_width];
  
  //grip
- var grip_height = 1 + 1/16;
+ var grip_height = 1;
  var grip_radius = 1/8;
  var grip_size = [-(grip_radius*2 + stabilizer_height + stabilizer_radius),thickness,-grip_height];
  
@@ -71,6 +75,14 @@ var max_wall_width = 5;
     return holder;
  }
  
+ function Snap()
+ {
+     var snap = cube([1, thickness/4, 1/4]);
+     snap = union(snap, intersection(cube([1/2,thickness/4 + 3/32, 1/4]).rotateZ(-10), cube([1/2 - 1/16,thickness/4 + 3/32, 1/4])).translate([1 - 1/16, 0,0]));
+     
+     return snap;
+ }
+ 
  function Base()
  {
      var hole = cylinder({'r': 1/16}).rotateY(90);
@@ -81,6 +93,9 @@ var max_wall_width = 5;
      
      //stabilizers
      var stabilizer = cylinder({'r' : stabilizer_radius, 'h': stabilizer_height}).rotateY(-90).translate([thickness,0,0]);
+     stabilizer = union(stabilizer, sphere({'r': stabilizer_radius}).rotateY(90).translate([-stabilizer_height + stabilizer_radius - clearance,0,0]));
+     stabilizer = union(stabilizer, cube([thickness, stabilizer_radius*4,stabilizer_radius*4]).rotateX(45).translate([0,0,-stabilizer_radius]));
+     
      base = union(base, stabilizer.translate([0,bottle_radius*2,-stabilizer_radius]));
      base = union(base, stabilizer.translate([0,base_size[1] - 1,-stabilizer_radius]));
      
@@ -121,8 +136,7 @@ var max_wall_width = 5;
      base = union(base, snap.translate([0, 1/16, (base_size[2] - 1 - thickness)*3/4 - 1/8]));
      base = union(base, snap.translate([0, 1/16, (base_size[2] - 1 - thickness)/4 - 1/8]));
      
-     snap = cube([1, thickness/4, 1/4]);
-     snap = union(snap, intersection(cube([1/2,thickness/4 + 3/32, 1/4]).rotateZ(-10), cube([1/2 - 1/16,thickness/4 + 3/32, 1/4])).translate([1 - 1/16, 0,0]));
+     snap = Snap();
      
      base = union(base, snap.translate([thickness, base_size[1] - thickness - clearance/2, 1/2]));
      
@@ -142,24 +156,44 @@ var max_wall_width = 5;
      holder = difference(holder, cylinder({'r': bottle_neck_radius + clearance}));
      holder = holder.rotateZ(-45).translate([thickness + sprayer_width/2,bottle_radius,-bottle_neck_offset - bottle_neck_height + clearance/2]);
      
-     holder = union(holder, cube([-1, 3/4, bottle_neck_height - clearance]).translate([-bottle_neck_radius + sprayer_width/2 + thickness - clearance, bottle_radius - 3/8, -bottle_neck_offset - bottle_neck_height + clearance/2]));
-     holder = union(holder, cube([-3/4, 3/4,-bottle_neck_offset - clearance - 1/2]).translate([-bottle_neck_radius + sprayer_width/2 + thickness - clearance - 1/4, bottle_radius - 3/8, 1/2]));
+     holder = union(holder, cube([-3/4, 3/4, bottle_neck_height - clearance]).translate([-bottle_neck_radius + sprayer_width/2 + thickness + clearance*3/2, bottle_radius - 3/8, -bottle_neck_offset - bottle_neck_height + clearance/2]));
+     holder = union(holder, cube([-1/2, 3/4,-bottle_neck_offset - clearance - 1/2]).translate([-bottle_neck_radius + sprayer_width/2 + thickness + clearance*3/2 - 1/4, bottle_radius - 3/8, 1/2]));
      
-     holder = union(holder, support.rotateX(90).scale([1.8,-2.2857, 1.9]).translate([0, bottle_radius - 3/8, 1/4]));
-     holder = union(holder, support.rotateX(90).rotateZ(180).scale([0.4,2.2857,0.5]).translate([-bottle_neck_radius + clearance, bottle_radius - 3/8, -bottle_neck_offset - bottle_neck_height - clearance/2 + 1/8]));
+     holder = union(holder, support.rotateX(90).scale([1.2,-2.5262, 1.5]).translate([0, bottle_radius - 3/8, 0]));
      
      base = union(base, holder);
+     
+     //attachment female parts
+     var guide_width = guide_radius*2 + thickness;
+     var guide = union(cube([guide_width - guide_radius - thickness/2, guide_width, guide_length - clearance]).translate([0,-guide_width/2,0]), cylinder({'r': guide_width/2, 'h': guide_length}));
+     guide = difference(guide, cylinder({'r': guide_radius + clearance/4, 'h': guide_length - clearance}));
+     
+     guide = difference(guide, difference(cylinder({'r': guide_width/2}),torus({'ro': guide_width/2, 'ri': thickness/2 - clearance/4})).translate([0,0, guide_length - thickness/2 - clearance*3/4]));
+     
+     guide = guide.translate([-guide_width/2,0,base_size[2] - 1 - guide_length]);
+     
+     base = union(base, guide.translate([0,1/2,0]));
+     base = union(base, guide.translate([0,base_size[1] - 1/2,0]));
+     
+     //snap
+     guide = cube([-thickness - 1/8, thickness + 1/4, thickness]);
+     guide = difference(guide, cube([-1/8 - thickness/4 - clearance/4, 1/4 + clearance, thickness]).translate([0,thickness/2 - clearance/2,0]));
+     guide = difference(guide, cube([1/8 + thickness/4 + clearance/4, 1/4 + clearance, thickness*2]).rotateY(-20).translate([ -1/8 - (thickness + clearance)/4, thickness/2 - clearance/2,0]));
+     guide = guide.translate([0,0, base_size[2] - 2 + clearance/2 + 1/4 + 1/16 - clearance/4]);
+     
+     base = union(base, guide.translate([0, 1 + 1/4 - thickness/2,0]));
+     //base = union(base, guide.rotateZ(180).translate([thickness, bottle_radius*2 + thickness + breadboard_length/2, 0]));
      
      return base;
  }
  
  function Attachment_A()
  {
-     var attachment = cube([base_size[0], base_size[1], 1 - clearance/2]);
+     var attachment = cube([base_size[0], base_size[1], 1]).translate([0,0,base_size[2] - 1]);
      
      //stabilizers
      var stabilizer = cylinder({'r' : stabilizer_radius, 'h': stabilizer_height}).rotateY(-90).translate([thickness,0,0]);
-     stabilizer = union(stabilizer, sphere({'r': stabilizer_radius}).translate([-stabilizer_height + stabilizer_radius,0,0]));
+     stabilizer = union(stabilizer, sphere({'r': stabilizer_radius}).rotateY(90).translate([-stabilizer_height + stabilizer_radius - clearance,0,0]));
      stabilizer = union(stabilizer, cube([thickness, stabilizer_radius*4,stabilizer_radius*4]).rotateX(45).translate([0,0,-stabilizer_radius]));
      
      attachment = union(attachment, stabilizer.rotateX(180).translate([0,1,stabilizer_radius + base_size[2] + clearance]));
@@ -188,14 +222,54 @@ var max_wall_width = 5;
      attachment = difference(attachment, cutout.translate([0,thickness - clearance/2,base_size[2] - 0.5 - wire_width/2 - clearance/2]));
      attachment = difference(attachment, cutout.scale([(wire_width*3 + clearance)/(wire_width*3 + thickness*2 + clearance/2),1,1]).rotateY(90).translate([thickness*2 + wire_width - clearance/2,thickness - clearance/2, base_size[2] - 0.5 + wire_width*1.5 + clearance/2]));
      
+     //guides
+     var guide_width = guide_radius*2;
+     var guide = union(cube([guide_radius + thickness/2, guide_width, -1/4]).translate([0,-guide_width/2,0]), cylinder({'r': guide_radius, 'h': -guide_length - 1/4 - clearance/4}));
+     
+     guide = guide.translate([-guide_width,0,base_size[2] - 1 + 1/4]);
+     
+     attachment = union(attachment, guide.translate([0,1/2,0]));
+     attachment = union(attachment, guide.translate([0,base_size[1] - 1/2,0]));
+     
+     //snap
+     var snap = Snap();
+     snap = union(snap, cube([1/4, -1/4, 1/4]));
+     
+     attachment = union(attachment, snap.rotateX(90).rotateY(90).rotateZ(180).translate([-1/8,1 + 1/4,base_size[2] - 1 + 1/4]));
      
      return attachment;
  }
  
  function Attachment_B()
  {
-    var attachment = cube([base_size[0], base_size[1], 1 - clearance/2]);
+     var attachment = cube([base_size[0], base_size[1], 1/2]).translate([0,0,base_size[2] - 1]);
+    
+     var hook = cube([-stabilizer_height - stabilizer_radius + thickness, 1/2, thickness]);
+    
+     hook = union(hook, cube([thickness, 1/2, 3/4]).translate([-stabilizer_height - stabilizer_radius + thickness,0,0])).translate([0,-1/4,0]);
+    
+     hook = union(hook, cylinder({'r': 1/4, 'h': thickness}).rotateY(90).translate([ - stabilizer_height - stabilizer_radius + thickness, 0, 3/4]));
+    
+     hook = difference(hook, cylinder({'r': 1/8}).rotateY(-90).translate([-stabilizer_radius, 0, thickness + 1/4]));
+     hook = difference(hook, cylinder({'r': 1/16}).rotateY(-90).translate([-stabilizer_radius, 0, thickness + 1/16 + 1/2]));
+     hook = difference(hook, cube([-1, 1/8,5/16]).translate([-stabilizer_radius, -1/16,thickness + 1/4]));
      
+     attachment = union(attachment, hook.translate([0,base_size[1]/2,base_size[2] - 1]));
+    
+     //guides
+     var guide_width = guide_radius*2;
+     var guide = union(cube([guide_radius + thickness/2, guide_width, -1/4]).translate([0,-guide_width/2,0]), cylinder({'r': guide_radius, 'h': -guide_length - 1/4 - clearance/4}));
+     
+     guide = guide.translate([-guide_width,0,base_size[2] - 1 + 1/4]);
+     
+     attachment = union(attachment, guide.translate([0,1/2,0]));
+     attachment = union(attachment, guide.translate([0,base_size[1] - 1/2,0]));
+     
+     //snap
+     var snap = Snap();
+     snap = union(snap, cube([1/4, -1/4, 1/4]));
+     
+     attachment = union(attachment, snap.rotateX(90).rotateY(90).rotateZ(180).translate([-1/8,1 + 1/4,base_size[2] - 1 + 1/4]));
      
      return attachment;
  }
@@ -274,6 +348,8 @@ var max_wall_width = 5;
      
      var cube_side = 5/8;
      rail = union(rail, intersection(cube(cube_side).translate([0,-cube_side/2,-cube_side/2]).rotateX(45), cube().translate([0,-1,-0.5])).translate([-clearance/2 - stabilizer_height/2 + thickness/2 - cube_side/2, full_track_length*3/4, wire_width*1.5]))
+     
+     rail = difference(rail, cube([ -guide_radius*2 - thickness/2 - clearance, 1, 1/4 + clearance]).translate([0, full_track_length*3/4 - 1/2, -3/8 + clearance/4]));
      
      return rail.translate([0,wire_width*2,base_size[2] - 0.5 - wire_width*1.5]);
  }
@@ -391,28 +467,29 @@ var max_wall_width = 5;
      var sprayer = Sprayer();
      sprayer = sprayer.translate([sprayer_width/2 + thickness,bottle_radius,0]);
      
+     var motor_holder = Motor_Holder();
+     motor_holder = motor_holder.translate([0,0, bottle_height - sprayer_height + thickness]);
+     
      var handle = Handle();
      handle = handle.rotateZ(-90);
      handle = handle.translate([thickness*3 + wire_width*3 + clearance,handle_length - thickness + handle_radius,bottle_height - sprayer_height + base_size[2] - handle_radius - thickness/2 + clearance/2]);
      
-     var motor_holder = Motor_Holder();
-     motor_holder = motor_holder.translate([0,0, bottle_height - sprayer_height + thickness]);
-     
      var rail_a = Rail_A();
-     rail_a = rail_a.translate([0,wire_width, bottle_height - sprayer_height]);
+     rail_a = rail_a.translate([0,wire_width, 0]);
      
      var rail_b = Rail_B();
-     rail_b = rail_b.translate([0,wire_width, bottle_height - sprayer_height]);
+     rail_b = rail_b.translate([0,wire_width, 0]);
      
      var attachment_a = Attachment_A();
-     attachment_a = attachment_a.translate([0,0, + base_size[2] + clearance/2]);
      
-     attachment_a = union(attachment_a, union(rail_a, rail_b).translate([0,1,0])).translate([0,0,bottle_height - sprayer_height]);
+     attachment_a = union(attachment_a, union(rail_a, rail_b).translate([0,1,0])).translate([0,0,bottle_height - sprayer_height + clearance/4]);
+     
+     var attachment_b = Attachment_B().translate([0,0,bottle_height - sprayer_height + clearance/4]);
      
      return union(  cover.setColor([0.2,0.2,0.2])
                     ,base.setColor([0.2,0.2,0.2])
-                    ,attachment_a.setColor([0.2,0.2,0.2])
-                    ,handle.setColor([0.2, 0.2, 0.2])
+                    ,attachment_b.setColor([0.2,0.2,0.2])
+                    //,handle.setColor([0.2, 0.2, 0.2])
                     ,motor_holder.setColor([0.2,0.2,0.2])
                     ,sprayer.setColor([0.5,0.5,0.5])
                     ).scale(25.4); // inches to millimeters
