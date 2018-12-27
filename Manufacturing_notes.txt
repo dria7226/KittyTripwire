@@ -10,5 +10,34 @@ http://www.indepak.com/?gclid=Cj0KCQiApILhBRD1ARIsAOXWTzuVp8hSA4hO2j2NqPsh2ilL_W
 Lasers:
 https://www.amazon.com/650nm-Laser-Diode-Module-Copper/dp/B014GLX8JI
 
+Photoresistor:
+https://www.banggood.com/100Pcs-5MM-GL5528-Light-Dependent-Resistor-Photoresistor-LDR-p-943463.html?gmcCountry=US&currency=USD&cur_warehouse=CN&createTmp=1&utm_source=googleshopping&utm_medium=cpc_elc&utm_content=frank&utm_campaign=pla-mix-us-pc-0626&gclid=Cj0KCQiA6ozhBRC8ARIsAIh_VC242MJuxZiPSyYC-1FVtnolBCKlOn1b5Zw0pgumQlet21xZg0IWdEgaAsRIEALw_wcB
+(100pcs $4.43)
+
+https://www.ebay.com/i/253087540935?chn=ps (100pcs $2.84)
+
+Motor:
+
+
 Mirrors:
 https://www.artcove.com/basic-craft-supplies/craft-mirrors/square-craft-mirrors/0.5-inch-glass-craft-mini-square-mirrors-bulk-100-pieces/
+
+Bottles & Sprayers:
+https://www.containerandpackaging.com/products/55/pet-imperial-and-bullet-and-cosmo-rounds/B344
+https://www.containerandpackaging.com/products/28/fine-mist-sprayers/S121
+
+Current TOTAL cost: $3.3293
+
+Product:
+  Injected Plastics: $
+  2x mirrors: $0.16
+  Laser: $0.295
+  Photocell: $0.0443
+  Motor: $
+  PCB: $
+  Bottle: $0.44
+  Sprayer: $0.39
+  
+Packaging:
+  Thermoforming: 
+  Printed cardboard: 
